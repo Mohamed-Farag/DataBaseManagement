@@ -12,7 +12,7 @@ This project is designed to create a database, export data to CSV and JSON forma
 1. Clone the repository
 
     ```bash
-    git clone https://github.com/Mohamed-Farag/DataBaseManagement.git
+    git clone https://github.com/Mohamed-Farag/DataBaseManagementSystem.git
     cd DataBaseManagement
     ```
 
