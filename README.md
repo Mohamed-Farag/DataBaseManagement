@@ -51,9 +51,9 @@ This project is designed to create a database, export data to CSV and JSON forma
 
 - `main.py` The main script that coordinates the entire process.
 - `setupEnvironment.py` Sets up the environment and provides configuration details and sample data.
-- `utils.databaseManager.py` Contains the `DatabaseManager` class for database operations.
-- `utils.fileManager.py` Contains the `FileManager` class for CSV and json operations.
-- `utils.report.py` Contains the `ReportGenerator` class for generating reports.
+- `utils\databaseManager.py` Contains the `DatabaseManager` class for database operations.
+- `utils\fileManager.py` Contains the `FileManager` class for CSV and json operations.
+- `utils\report.py` Contains the `ReportGenerator` class for generating reports.
 
 ## Output
 
