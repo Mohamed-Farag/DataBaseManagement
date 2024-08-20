@@ -1,6 +1,5 @@
 from utils import databaseManager
 from utils import report
-import os
 import setupEnvironment
 
 def main():
