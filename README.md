@@ -5,7 +5,7 @@ This project is designed to create a database, export data to CSV and JSON forma
 ## Prerequisites
 
 - Python 3.x
-- Python package: "reportlab"  
+- Python package: "reportlab" (will be installed in Setup section)  
 
 ## Setup
 
