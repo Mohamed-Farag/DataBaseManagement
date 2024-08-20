@@ -57,9 +57,9 @@ This project is designed to create a database, export data to CSV and JSON forma
 ## Output
 
 - script will create output folder which contains:
+    - `sample.db`: A database file that contain data table with records (e.g. 10 records)
     - `CSV File`: The data is exported to a CSV file
     - `JSON File`: The data is exported to a JSON file
     - `PDF Report`: A report is generated in PDF format and saved to the path specified in the configuration.
-    - `sample.db`: A database file that contain data table with records (e.g. 10 records)
 
 
