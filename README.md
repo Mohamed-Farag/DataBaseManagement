@@ -13,7 +13,7 @@ This project is designed to create a database, export data to CSV and JSON forma
 
     ```bash
     git clone https://github.com/Mohamed-Farag/DataBaseManagement.git
-    cd repository_directory
+    cd DataBaseManagement
     ```
 
 2. Install the required packages
