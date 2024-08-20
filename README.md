@@ -57,8 +57,8 @@ This project is designed to create a database, export data to CSV and JSON forma
 ## Output
 
 - script will create output folder which contains:
-    1- CSV File: The data is exported to a CSV file
-    2- JSON File: The data is exported to a JSON file
-    3- PDF Report: A report is generated in PDF format and saved to the path specified in the configuration.
+    - `CSV File`: The data is exported to a CSV file
+    - `JSON File`: The data is exported to a JSON file
+    - `PDF Report`: A report is generated in PDF format and saved to the path specified in the configuration.
 
 
