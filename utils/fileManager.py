@@ -1,7 +1,12 @@
 import csv
 import json
+import logging
 
 class FileManager:
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(level=logging.ERROR)
+
     def read_csv(self, csv_file):
         """
         Read data from the CSV file.
@@ -14,7 +19,7 @@ class FileManager:
                 data = list(reader)
             return data
         except Exception as e:
-            print(f"Error reading CSV file: {e}")
+            self.logger.error(f"Error reading CSV file: {e}")
             return []
 
     def read_json(self, json_file):
@@ -28,5 +33,5 @@ class FileManager:
                 data = json.load(file)
             return data
         except Exception as e:
-            print(f"Error reading JSON file: {e}")
+            self.logger.error(f"Error reading JSON file: {e}")
             return []
