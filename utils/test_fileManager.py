@@ -3,10 +3,10 @@ from unittest.mock import patch, mock_open
 from fileManager import FileManager
 
 class TestFileManager(unittest.TestCase):
+    
     # This decorator replaces the open function with a mock object that simulates opening a file with predefined content.
     # Creates a mock object to simulate file operations
     # The read_data argument specifies the content that the file should return when read.
-
     @patch("builtins.open", new_callable=mock_open, read_data="col1,col2\nval1,val2\nval3,val4")
     def test_read_csv_success(self, mock_file):
         fm = FileManager()
