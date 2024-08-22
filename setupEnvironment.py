@@ -17,8 +17,8 @@ def setup_sample_environment():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Build the path to the SQLite database, JSON and CSV files in the same directory as the script
-    db_path = os.path.join(output_dir,db_name)
+    # Build the path to the SQLite database, JSON and CSV files
+    db_path = os.path.join(db_name)
     CSV_file_path = os.path.join(output_dir,CSV_file_name)
     json_file_path = os.path.join(output_dir,json_file_name)
     report_file_path = os.path.join(output_dir,report_file_name)
