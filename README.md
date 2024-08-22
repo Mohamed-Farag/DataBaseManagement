@@ -2,16 +2,6 @@
 
 This project is designed to create a database, export data to CSV and JSON formats, and generate a report in PDF format. The main script, `main.py`, orchestrates these tasks using various utility modules.
 
-## Libraries Used
-- `os`: Operating system interfaces
-- `csv`: CSV file handling
-- `json`: JSON data handling
-- `logging`: Logging facility
-- `sqlite3`: SQLite database library
-- `reportlab`: Library for generating PDFs
-- `unittest`: Unit testing framework
-- `unittest.mock`: Mocking library for unit tests
-
 ## Prerequisites
 
 - Python 3.x
@@ -60,6 +50,16 @@ This project is designed to create a database, export data to CSV and JSON forma
 
     - Report Generation
         - Generates a report in PDF format using the exported CSV and JSON files.
+
+## Libraries Used
+- `os`: Operating system interfaces
+- `csv`: CSV file handling
+- `json`: JSON data handling
+- `logging`: Logging facility
+- `sqlite3`: SQLite database library
+- `reportlab`: Library for generating PDFs
+- `unittest`: Unit testing framework
+- `unittest.mock`: Mocking library for unit tests
 
 ## File Structure
 
