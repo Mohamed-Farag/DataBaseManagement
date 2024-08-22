@@ -1,87 +1,134 @@
+import os
 import unittest
-from unittest.mock import patch, MagicMock, mock_open
-import csv
-import json
+from unittest.mock import patch
 from databaseManager import DatabaseManager
+from sqlite3 import Error
 
 class TestDatabaseManager(unittest.TestCase):
-    @patch('sqlite3.connect')
-    def setUp(self, mock_connect):
-        # Mock the sqlite3.connect method to return a mock connection object
-        self.mock_conn = MagicMock()
-        mock_connect.return_value = self.mock_conn
-        # Initialize the DatabaseManager with the mock connection
-        self.db_manager = DatabaseManager('test_db.sqlite')
+    def setUp(self):
+        # Initialize the DatabaseManager
+        self.db_manager_test = DatabaseManager('test_sample.db')
+        # Create the table before each test
+        self.db_manager_test.create_table()
+
 
     def test_create_connection(self):
-        # Test that the connection is created and a cursor is obtained
-        self.assertIsNotNone(self.db_manager.conn)
-        self.mock_conn.cursor.assert_called_once()
+        # Test that the connection is created
+        self.assertIsNotNone(self.db_manager_test.conn)
+        print("test_create_connection: passed")
+
+    @patch('sqlite3.connect', side_effect=Error("Mocked connection error"))
+    def test_create_connection_exception(self, mock_connect):
+        # Test that the connection fails and None is returned
+        db_manager_test = DatabaseManager('sample.db')
+        self.assertIsNone(db_manager_test.conn)
+        mock_connect.assert_called_once()
+        print("test_create_connection_exception: Exception handling test passed.")
 
     def test_create_table(self):
         # Test that the create_table method executes the correct SQL query
-        self.db_manager.create_table()
-        self.mock_conn.cursor().execute.assert_called_once()
-        self.mock_conn.cursor().execute.assert_called_with('''
-            CREATE TABLE IF NOT EXISTS data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                email TEXT NOT NULL,
-                zip_code TEXT NOT NULL,
-                title TEXT NOT NULL
-            )
-        ''')
+        self.db_manager_test.create_table()
+        cursor = self.db_manager_test.conn.cursor()
+
+        # The query checks the sqlite_master table,
+        # which is a system table in SQLite that stores metadata about the database schema,
+        # including information about tables, indexes, and other objects.
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='data';")
+
+        table_exists = cursor.fetchone()
+        self.assertIsNotNone(table_exists)
+        print("test_create_table: Table creation test passed.")
+
 
     def test_insert_data(self):
-        # Test that the insert_data method inserts data correctly
-        data = [('John Doe', 'john@example.com', '12345', 'Developer')]
-        self.db_manager.insert_data(data)
-        self.mock_conn.cursor().executemany.assert_called_once_with('''
-            INSERT INTO data (name, email, zip_code, title)
-            VALUES (?, ?, ?, ?)
-        ''', data)
-        self.mock_conn.commit.assert_called_once()
+        # Sample data to insert
+        sample_data = [
+            ('John Doe', 'john@example.com', '12345', 'Manager'),
+            ('Jane Smith', 'jane@example.com', '67890', 'Developer')
+        ]
+        
+        # Insert data
+        self.db_manager_test.insert_data(sample_data)
+        
+        # Verify data insertion
+        cursor = self.db_manager_test.conn.cursor()
+        cursor.execute("SELECT * FROM data")
+        rows = cursor.fetchall()
+        
+        self.assertEqual(len(rows), len(sample_data))
 
-    @patch('builtins.open', new_callable=mock_open)
-    def test_export_to_csv(self, mock_open):
-        # Mock the cursor's fetchall and description methods
-        cursor = self.mock_conn.cursor()
-        cursor.fetchall.return_value = [(1, 'John Doe', 'john@example.com', '12345', 'Developer')]
-        cursor.description = [('id',), ('name',), ('email',), ('zip_code',), ('title',)]
+        # Check the content of each row
+        for i, row in enumerate(rows):
+            self.assertEqual(row[1], sample_data[i][0])  # Name
+            self.assertEqual(row[2], sample_data[i][1])  # Email
+            self.assertEqual(row[3], sample_data[i][2])  # Phone
+            self.assertEqual(row[4], sample_data[i][3])  # Position
         
-        # Test that the export_to_csv method writes the correct data to a CSV file
-        self.db_manager.export_to_csv('output.csv')
-        
-        mock_open.assert_called_once_with('output.csv', 'w', newline='')
-        handle = mock_open()
-        handle.write.assert_called()
-        writer = csv.writer(handle())
-        writer.writerow.assert_called_once_with(['id', 'name', 'email', 'zip_code', 'title'])
-        writer.writerows.assert_called_once_with([(1, 'John Doe', 'john@example.com', '12345', 'Developer')])
+        print("test_insert_data: Data insertion test passed.")
 
-    @patch('builtins.open', new_callable=mock_open)
-    def test_export_to_json(self, mock_open):
-        # Mock the cursor's fetchall and description methods
-        cursor = self.mock_conn.cursor()
-        cursor.fetchall.return_value = [(1, 'John Doe', 'john@example.com', '12345', 'Developer')]
-        cursor.description = [('id',), ('name',), ('email',), ('zip_code',), ('title',)]
+
+    def test_export_to_csv(self):
+        # Sample data to insert
+        sample_data = [
+            ('John Doe', 'john@example.com', '12345', 'Manager'),
+            ('Jane Smith', 'jane@example.com', '67890', 'Developer')
+        ]
         
-        # Test that the export_to_json method writes the correct data to a JSON file
-        self.db_manager.export_to_json('output.json')
+        # Insert data
+        self.db_manager_test.insert_data(sample_data)
         
-        mock_open.assert_called_once_with('output.json', 'w')
-        handle = mock_open()
-        handle.write.assert_called()
-        json.dump.assert_called_once_with(
-            [{'id': 1, 'name': 'John Doe', 'email': 'john@example.com', 'zip_code': '12345', 'title': 'Developer'}],
-            handle(),
-            indent=4
-        )
+        # Export to CSV
+        output_file = 'test_output.csv'
+        self.db_manager_test.export_to_csv(output_file)
+        
+        # Verify CSV export
+        self.assertTrue(os.path.exists(output_file))
+        with open(output_file, 'r') as file:
+            content = file.read()
+            self.assertIn('John Doe', content)
+            self.assertIn('Jane Smith', content)
+        print("test_export_to_csv: CSV export test passed.")
+
+    def test_export_to_json(self):
+        # Sample data to insert
+        sample_data = [
+            ('John Doe', 'john@example.com', '12345', 'Manager'),
+            ('Jane Smith', 'jane@example.com', '67890', 'Developer')
+        ]
+        
+        # Insert data
+        self.db_manager_test.insert_data(sample_data)
+        
+        # Export to JSON
+        output_file = 'test_output.json'
+        self.db_manager_test.export_to_json(output_file)
+        
+        # Verify JSON export
+        self.assertTrue(os.path.exists(output_file))
+        with open(output_file, 'r') as file:
+            content = file.read()
+            self.assertIn('John Doe', content)
+            self.assertIn('Jane Smith', content)
+        print("test_export_to_json: JSON export test passed.")
 
     def tearDown(self):
         # Close the database connection after each test
-        self.db_manager.close_connection()
-        self.mock_conn.close.assert_called_once()
+        self.db_manager_test.close_connection()
 
+        # Delete the test database file after each test
+        if os.path.exists('test_sample.db'):
+            os.remove('test_sample.db')
+
+        # Delete the output CSV file after each test
+        if os.path.exists('test_output.csv'):
+            os.remove('test_output.csv')
+
+        # Delete the output json file after each test
+        if os.path.exists('test_output.json'):
+            os.remove('test_output.json')
+
+        # print dashes for pretty reading output log
+        print('-------------------------------------------')
 if __name__ == '__main__':
     unittest.main()
+
