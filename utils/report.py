@@ -106,15 +106,19 @@ class ReportGenerator:
                 companies.add(company)
             
             num_companies = len(companies)
-            
+            companies_list = ', '.join(companies)  # Create a comma-separated list of companies
+
             # Add the heading in bold
             self.pdf_canvas.setFont("Helvetica-Bold", self.section_title_font_size)
-            self.pdf_canvas.drawString(self.margin, self.y_position, "Number of unique companies:")
+            self.pdf_canvas.drawString(self.margin, self.y_position, "Unique companies exist in emails instered:")
             
-            # Add the number (not bold)
+            # Add the number and list of companies (not bold)
             self.y_position -= self.line_height  # Move y_position down for the number
             self.pdf_canvas.setFont("Helvetica", self.section_title_font_size)
-            self.pdf_canvas.drawString(self.margin, self.y_position, str(num_companies))
+            self.pdf_canvas.drawString(self.margin, self.y_position, f"The total number is: {num_companies}")
+            self.y_position -= self.line_height  # Move y_position down for the list of companies
+            self.pdf_canvas.drawString(self.margin, self.y_position, f"Companies: {companies_list}")
+
 
         except Exception as e:
             print(f"Failed to add unique companies: {e}")

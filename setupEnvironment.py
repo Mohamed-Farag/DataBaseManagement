@@ -35,13 +35,13 @@ def setup_sample_environment():
     sample_records = [
         ('Mohamed Emad', 'Mohamed@siemens.com', '10001', 'Engineer'),
         ('Mostafa Khaled', 'Mostafa@valeo.com', '10002', 'Manager'),
-        ('Abeer Ali zein', 'Abeer@eJad.com', '10003', 'Technician'),
+        ('Abeer Ali zein', 'Abeer@we.com', '10003', 'Technician'),
         ('Khaled Morsy nour', 'Khaled@vodafone.com', '10004', 'Engineer'),
         ('Lotfy Elzein', 'Lotfy@orange.com', '10005', 'Analyst'),
         ('Diana Shaker', 'Diana@siemens.com', '10006', 'Director'),
         ('George', 'george@valeo.com', '10007', 'Consultant'),
         ('Hannah Lee', 'hannah@valeo.com', '10008', 'Director'),
-        ('Ian Clarke', 'ian@eJad.com', '10009', 'Manager'),
+        ('Ian Clarke', 'ian@we.com', '10009', 'Manager'),
         ('Jasmine Yasser', 'jasmine@siemens.com', '10010', 'Assistant')
     ]
 
