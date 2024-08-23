@@ -3,11 +3,15 @@ import unittest
 from unittest.mock import patch
 from databaseManager import DatabaseManager
 from sqlite3 import Error
-
+import logging
 class TestDatabaseManager(unittest.TestCase):
     def setUp(self):
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        self.logger = logging.getLogger(__name__)
+
         # Initialize the DatabaseManager
         self.db_manager_test = DatabaseManager('test_sample.db')
+        
         # Create the table before each test
         self.db_manager_test.create_table()
 
@@ -15,7 +19,7 @@ class TestDatabaseManager(unittest.TestCase):
     def test_create_connection(self):
         # Test that the connection is created
         self.assertIsNotNone(self.db_manager_test.conn)
-        print("test_create_connection: passed")
+        self.logger.info("test_create_connection: passed")
 
     @patch('sqlite3.connect', side_effect=Error("Mocked connection error"))
     def test_create_connection_exception(self, mock_connect):
@@ -23,7 +27,7 @@ class TestDatabaseManager(unittest.TestCase):
         db_manager_test = DatabaseManager('sample.db')
         self.assertIsNone(db_manager_test.conn)
         mock_connect.assert_called_once()
-        print("test_create_connection_exception: Exception handling test passed.")
+        self.logger.info("test_create_connection_exception: Exception handling test passed.")
 
     def test_create_table(self):
         # Test that the create_table method executes the correct SQL query
@@ -37,7 +41,7 @@ class TestDatabaseManager(unittest.TestCase):
 
         table_exists = cursor.fetchone()
         self.assertIsNotNone(table_exists)
-        print("test_create_table: Table creation test passed.")
+        self.logger.info("test_create_table: Table creation test passed.")
 
 
     def test_insert_data(self):
@@ -64,7 +68,7 @@ class TestDatabaseManager(unittest.TestCase):
             self.assertEqual(row[3], sample_data[i][2])  # Phone
             self.assertEqual(row[4], sample_data[i][3])  # Position
         
-        print("test_insert_data: Data insertion test passed.")
+        self.logger.info("test_insert_data: Data insertion test passed.")
 
 
     def test_export_to_csv(self):
@@ -87,7 +91,7 @@ class TestDatabaseManager(unittest.TestCase):
             content = file.read()
             self.assertIn('John Doe', content)
             self.assertIn('Jane Smith', content)
-        print("test_export_to_csv: CSV export test passed.")
+        self.logger.info("test_export_to_csv: CSV export test passed.")
 
     def test_export_to_json(self):
         # Sample data to insert
@@ -109,7 +113,7 @@ class TestDatabaseManager(unittest.TestCase):
             content = file.read()
             self.assertIn('John Doe', content)
             self.assertIn('Jane Smith', content)
-        print("test_export_to_json: JSON export test passed.")
+        self.logger.info("test_export_to_json: JSON export test passed.")
 
     def tearDown(self):
         # Close the database connection after each test

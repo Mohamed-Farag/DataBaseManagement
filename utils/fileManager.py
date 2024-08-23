@@ -5,7 +5,7 @@ import logging
 class FileManager:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        logging.basicConfig(level=logging.ERROR)
+        logging.basicConfig(level=logging.INFO)
 
     def read_csv(self, csv_file):
         """

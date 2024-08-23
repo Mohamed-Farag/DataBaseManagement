@@ -2,6 +2,7 @@ import csv
 import json
 import sqlite3
 from sqlite3 import Error
+import logging
 
 class DatabaseManager:
     def __init__(self, db_file):
@@ -10,6 +11,8 @@ class DatabaseManager:
         :param db_file: database file
         """
         self.db_file = db_file
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        self.logger = logging.getLogger(__name__)
         self.conn = self.create_connection()
 
     def create_connection(self):
@@ -19,10 +22,10 @@ class DatabaseManager:
         """
         try:
             conn = sqlite3.connect(self.db_file)
-            print(f"Connected to the database: {self.db_file}")
+            self.logger.info(f"Connected to the database: {self.db_file}")
             return conn
         except Error as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error creating connection to database: {e}")
             return None
 
     def create_table(self):
@@ -42,9 +45,9 @@ class DatabaseManager:
             )
             '''
             cursor.execute(query)
-            print("Table 'data' created successfully or already exists.")
+            self.logger.info("Table 'data' created successfully or already exists.")
         except Error as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error creating new table in database: {e}")
 
     def insert_data(self, data):
         """
@@ -59,9 +62,9 @@ class DatabaseManager:
             VALUES (?, ?, ?, ?)
             ''', data)
             self.conn.commit()
-            print(f"{len(data)} records inserted successfully.")
+            self.logger.info(f"{len(data)} records inserted successfully.")
         except Error as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error inserting new table in database: {e}")
 
     def export_to_csv(self, output_file):
         """
@@ -70,17 +73,10 @@ class DatabaseManager:
         :return: None
         """
         try:
-            # create a cursor
             cursor = self.conn.cursor()
-
-            # Write a query and execute it with cursor
             query = "SELECT * FROM data"
             cursor.execute(query)
-
-            # Fetch and output result
             rows = cursor.fetchall()
-
-             # Get the headers
             headers = [description[0] for description in cursor.description]
             
             with open(output_file, 'w', newline='') as file:
@@ -88,9 +84,9 @@ class DatabaseManager:
                 writer.writerow(headers)  # Write headers
                 writer.writerows(rows)
             
-            print(f"Data exported to {output_file} successfully.")
+            self.logger.info(f"Data exported to {output_file} successfully.")
         except Error as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error exporting to CSV file: {e}")
 
     def export_to_json(self, output_file):
         """
@@ -99,33 +95,28 @@ class DatabaseManager:
         :return: None
         """
         try:
-            # create a cursor
             cursor = self.conn.cursor()
-
-            # Write a query and execute it with cursor
             query = "SELECT * FROM data"
             cursor.execute(query)
-
-            # Fetch and output result
             rows = cursor.fetchall()
-
-            # Get the headers
             headers = [description[0] for description in cursor.description]
-            
             data_list = [dict(zip(headers, row)) for row in rows]
             
             with open(output_file, 'w') as file:
                 json.dump(data_list, file, indent=4)
             
-            print(f"Data exported to {output_file} successfully.")
+            self.logger.info(f"Data exported to {output_file} successfully.")
         except Error as e:
-            print(f"Error: {e}")
+            self.logger.error(f"Error exporting to JSON file: {e}")
 
     def close_connection(self):
         """
         Close the database connection.
         :return: None
         """
-        if self.conn:
-            self.conn.close()
-            print("Database connection closed.")
+        try:  
+            if self.conn:
+                self.conn.close()
+                self.logger.info(f"Database connection is closed successfully.")
+        except Error as e:
+            self.logger.error(f"Error closing the database connection: {e}")

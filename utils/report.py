@@ -1,6 +1,7 @@
 from utils import fileManager
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import logging
 
 class ReportGenerator:
     """
@@ -14,6 +15,8 @@ class ReportGenerator:
         :param json_file_path: Path to the JSON file.
         :param pdf_path: Path where the generated PDF will be saved.
         """
+        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(level=logging.INFO)
         self.csv_file_path = csv_file_path
         self.json_file_path = json_file_path
         self.pdf_path = pdf_path
@@ -23,10 +26,10 @@ class ReportGenerator:
             self.csv_data = self.file_manager.read_csv(self.csv_file_path)
             self.json_data = self.file_manager.read_json(self.json_file_path)
         except FileNotFoundError as e:
-            print(f"Error: {e}")
+            self.logger.error(f"FileNotFoundError: can't find file to read from it: {e}")
             raise
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            self.logger.error(f"An unexpected error occurred: {e}")
             raise
 
         self.pdf_canvas = canvas.Canvas(self.pdf_path, pagesize=letter)
@@ -52,7 +55,7 @@ class ReportGenerator:
             # Initialize y_position for the rest of the content
             self.y_position = self.title_y - self.line_height * 2
         except Exception as e:
-            print(f"Failed to prepare PDF: {e}")
+            self.logger.error(f"Failed to prepare PDF: {e}")
             raise
 
     def add_total_records(self):
@@ -72,7 +75,7 @@ class ReportGenerator:
             
             self.y_position -= self.line_height * 2  # Move y_position down for the next section
         except Exception as e:
-            print(f"Failed to add total records: {e}")
+            self.logger.error(f"Failed to add total records: {e}")
             raise
 
     def add_sample_records(self):
@@ -91,7 +94,7 @@ class ReportGenerator:
                 self.y_position -= self.line_height
             self.y_position -= self.line_height  # Additional space after sample records
         except Exception as e:
-            print(f"Failed to add sample records: {e}")
+            self.logger.error(f"Failed to add sample records: {e}")
             raise
 
     def add_unique_companies(self):
@@ -115,13 +118,13 @@ class ReportGenerator:
             # Add the number and list of companies (not bold)
             self.y_position -= self.line_height  # Move y_position down for the number
             self.pdf_canvas.setFont("Helvetica", self.section_title_font_size)
-            self.pdf_canvas.drawString(self.margin, self.y_position, f"The total number is: {num_companies}")
+            self.pdf_canvas.drawString(self.margin, self.y_position, f"The total number of Unique companies =  {num_companies}")
             self.y_position -= self.line_height  # Move y_position down for the list of companies
             self.pdf_canvas.drawString(self.margin, self.y_position, f"Companies: {companies_list}")
 
 
         except Exception as e:
-            print(f"Failed to add unique companies: {e}")
+            self.logger.error(f"Failed to add unique companies: {e}")
             raise
 
     def add_title_counts(self):
@@ -144,7 +147,7 @@ class ReportGenerator:
                 self.pdf_canvas.drawString(self.margin, self.y_position, f"{title}: {count}")
                 self.y_position -= self.line_height
         except Exception as e:
-            print(f"Failed to add title counts: {e}")
+            self.logger.error(f"Failed to add title counts: {e}")
             raise
 
     def save_report(self):
@@ -153,9 +156,9 @@ class ReportGenerator:
         """
         try:
             self.pdf_canvas.save()
-            print(f"Report saved as {self.pdf_path}")
+            self.logger.info(f"Report saved as {self.pdf_path}")
         except Exception as e:
-            print(f"Failed to save report: {e}")
+            self.logger.error(f"Failed to save report: {e}")
             raise
 
     def generate_report(self):
@@ -170,5 +173,5 @@ class ReportGenerator:
             self.add_title_counts()
             self.save_report()
         except Exception as e:
-            print(f"Failed to generate report: {e}")
+            self.logger.error(f"Failed to generate report: {e}")
  
