@@ -113,7 +113,7 @@ class ReportGenerator:
 
             # Add the heading in bold
             self.pdf_canvas.setFont("Helvetica-Bold", self.section_title_font_size)
-            self.pdf_canvas.drawString(self.margin, self.y_position, "Unique companies exist in emails instered:")
+            self.pdf_canvas.drawString(self.margin, self.y_position, "Unique companies exist in emails inserted:")
             
             # Add the number and list of companies (not bold)
             self.y_position -= self.line_height  # Move y_position down for the number
